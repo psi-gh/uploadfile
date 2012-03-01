@@ -1,0 +1,36 @@
+Скрипты для реализации возможности загрузки файлов на сервер и генерации превью изображений
+
+Файлы:
+getpreview.wsgi - скрипт вызывается, чтобы сгенерировать превью. само превью генерирует previewclass
+sendfile.wsgi - загружает файл на сервер в папку Storage
+clear.py - очищает Storage и Previews
+previewclass.py - генератор превью. создает превью с указанными размерами в папке Previews. Для каждой картинки каждого размера своё уникальное имя (хэш md5). МД5 вместо просто именования файла-превью по URI Этого файла был выбран, чтобы не заморачиваться с экранированием символов, ну и чтобы избавиться от слишком длинных имен.
+
+Установка:
+Скрипты должны работать с Апачем и установленным mod_wsgi. В папке с сайтами скрипты должны располагаться в папке .../uploadfile/wsgi/
+В sites-available должно быть прописано примерно следующее
+WSGIScriptAlias /sendfile /var/www/uploadfile/wsgi/sendfile.wsgi
+WSGIScriptAlias /getpreview /var/www/uploadfile/wsgi/getpreview.wsgi
+Обращение будет к примеру таким: %%sever_name%%/sendfile 
+
+Использование:
+Загрузка файла:
+Стандартный POST запрос с файлом на http://%%server_name%%/sendfile?to=JID_TO_SEND
+вместо JID_TO_SEND должен передаваться jid контакта, которому кидается файл. Нужен, чтобы возвратить правильный javascript-код, который выполнится как callback в Neiron Talk. Аргументами функции в этом JS коде будет адрес файла и JID.
+
+Получение превью:
+Сделать запрос на 
+http://webgranula.dyndns.org:82/getpreview?x=SIZE_X&y=SIZE_Y&addr=LINK
+возвратится изображение. LINK - ссылка на изображение, на которое должно быть сделано превью. Должно быть url-закодировано. Ссылку поместить прямо в тег <img src="LINK_TO_PREVIEW">
+Пример:
+<img src="http://webgranula.dyndns.org:82/getpreview?x=200&y=100&addr=http%3A%2F%2Fwebgranula.dyndns.org%3A82%2Fuploadfile%2Fwsgi%2FStorage%2FQgBmmQxG%2F1323298110728.jpg">
+
+Запуск очистки по расписанию:
+$ sudo crontab -u root -e
+Добавить строку с нужными настройками, например
+1 * * * * python /var/www/uploadfile/wsgi/clear.py
+Будет вызываться каждый час.
+
+
+Чтобы не забыть:
+Если убирать парс по расширению со стороны talk, то в случае файла без расшринения в previewclass может произойти ошибка при сохранении im.save
