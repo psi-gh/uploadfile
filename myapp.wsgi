@@ -6,35 +6,53 @@ Created: 08.02.2012
 '''
 
 import cgi, re, random, string, os, socket, urllib
+import base64
+from PIL import Image
+import glob
+import sys
+sys.path.insert(0, "/var/www/uploadfile/wsgi/")
+import previewclass
 
 def getFolderName(length = 8, charset = string.ascii_letters + string.digits):
     return ''.join(random.choice(charset) for x in range(length))
+
 
 def writeToFile(data, filename, environ):
     fn = getFolderName()
     print >> environ['wsgi.errors'],  fn
     
-    filePath = os.path.dirname(os.path.abspath( __file__ )) + '/' + fn
+    filePath = os.path.dirname(os.path.abspath( __file__ )) + '/Storage/' + fn
     if not os.path.exists(filePath):
         os.makedirs(filePath)
     print >> environ['wsgi.errors'], filename
-    f = open(filePath + '/' + filename, 'wb')
+    fullFilePath = filePath + '/' + filename
+    print >> environ['wsgi.errors'], fullFilePath
+    f = open(fullFilePath, 'wb')
     f.write(data)
     f.close()
     
-    return environ['wsgi.url_scheme'] + '://' + environ['HTTP_HOST'] + '/uploadfile/wsgi/' + fn + '/' + urllib.quote(filename)
-    #return environ['HTTP_ORIGIN'] + '/uploadfile/wsgi/' + fn + '/' + urllib.quote(filename)
+    fileLink = environ['wsgi.url_scheme'] + '://' + environ['HTTP_HOST'] + '/uploadfile/wsgi/Storage/' + fn + '/' + urllib.quote(filename)
+    #res = getPreview(fullFilePath, environ)
+#    pr = previewclass.Preview()
+#    previewPath = pr.getPreview(fileLink)
+#    if (previewPath == 'Error'):
+#        print >> environ['wsgi.errors'],  "Error. Preview was not created!"
+    return fileLink
     #uploadfile - папка в .../www, строка тут и настройки в sites-available
+
     
 def application(environ, start_response):
     print >> environ['wsgi.errors'], "Start " + repr(environ)
     form = cgi.FieldStorage(fp=environ['wsgi.input'], environ=environ)
-    #print >> environ['wsgi.errors'], repr(form)
-    output=writeToFile(form.getvalue('file1'), form['file1'].filename, environ)  
+    print >> environ['wsgi.errors'], "There"
+#    print >> environ['wsgi.errors'], repr(form)
+    print >> environ['wsgi.errors'], '!@#!@#!@#!@' + form['file1'].filename
+    print >> environ['wsgi.errors'], 'to = ' + str(form['to'].value)
+    fileLink = writeToFile(form.getvalue('file1'), form['file1'].filename, environ)  
     status = '200 OK'
-    #output = "<script type='text/javascript'>top.Ext.dispatch({controller:'Chat', action: 'upload_result', args : ['" + str(output) + "']});</script>"
-    print >> environ['wsgi.errors'], output
-    output = "top.Ext.dispatch({controller:'Chat', action: 'upload_result', args : ['" + str(output) + "']});"
+    print >> environ['wsgi.errors'], fileLink
+#    output = "top.Ext.dispatch({controller:'Chat', action: 'upload_result', args : ['" + str(output) + "']});"
+    output = "<script type='text/javascript'>top.Ext.dispatch({controller:'Chat', action: 'upload_result', args : ['" + str(fileLink) + "', '" + str(form['to'].value) + "']});</script>"
 
     print >> environ['wsgi.errors'], output
     response_headers = [('Content-type', 'text/html;'),

@@ -20,17 +20,27 @@ def getsubs(dir):
     
     return fullsubdirs, files
 
-def main():
-
-    dirs, f = getsubs("/var/www/uploadfile/wsgi")
+def processPath(dirs):
     for x in dirs:
         if (datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(x))) > datetime.timedelta (days=1):
             print('removing ' + x + ' time is ' + time.asctime( time.localtime(os.path.getmtime(x))))
             shutil.rmtree(x)
+    
+
+def main():
+
+    storagePath = "/var/www/uploadfile/wsgi/Storage/"
+    previewsPath = "/var/www/uploadfile/wsgi/Previews/"
+    dirs, f = getsubs(storagePath)
+    processPath(dirs)
+    previewsList = os.listdir(previewsPath)
+    for x in range(len(previewsList)):
+        previewsList[x] = previewsPath + previewsList[x] 
+    processPath(previewsList)
+           
     f=open('/home/pavel/123.txt', 'a')    
     f.write(time.asctime() + '\n')
     f.close()
-            
         
 if __name__ == "__main__":
     main()
