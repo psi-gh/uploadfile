@@ -26,27 +26,22 @@ def writeToFile(data, filename, environ):
     if not os.path.exists(filePath):
         os.makedirs(filePath)
     print >> environ['wsgi.errors'], filename
+
+    if len(filename.split('.')) < 2:
+        ext = imghdr.what("this parameter is ignored", data)
+        if ext != None:
+            filename += '.' + ext
+            print >> environ['wsgi.errors'], 'fullFilePath after correct ' + filename
+
     fullFilePath = filePath + '/' + filename
     print >> environ['wsgi.errors'], fullFilePath
+
+            
     f = open(fullFilePath, 'wb')
     f.write(data)
     f.close()
-    
-    exts = ['jpg', 'jpeg', 'gif', 'bmp', 'png', 'tiff']
-    if filename.split('.')[-1] not in exts:
-        ext = imghdr.what(fullFilePath)
-        if ext in exts:
-            correctFullFilePath = fullFilePath + '.' + ext
-            filename += '.' + ext
-            print >> environ['wsgi.errors'], 'fullFilePath after correct ' + correctFullFilePath
-            os.rename(fullFilePath, correctFullFilePath)
-        
+
     fileLink = environ['wsgi.url_scheme'] + '://' + environ['HTTP_HOST'] + '/uploadfile/wsgi/Storage/' + fn + '/' + urllib.quote(filename)
-    #res = getPreview(fullFilePath, environ)
-#    pr = previewclass.Preview()
-#    previewPath = pr.getPreview(fileLink)
-#    if (previewPath == 'Error'):
-#        print >> environ['wsgi.errors'],  "Error. Preview was not created!"
     return fileLink
     #uploadfile - папка в .../www, строка тут и настройки в sites-available
 
