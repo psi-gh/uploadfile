@@ -12,6 +12,7 @@ import glob
 import sys
 sys.path.insert(0, "/var/www/uploadfile/wsgi/")
 import previewclass
+import imghdr
 
 def getFolderName(length = 8, charset = string.ascii_letters + string.digits):
     return ''.join(random.choice(charset) for x in range(length))
@@ -31,6 +32,15 @@ def writeToFile(data, filename, environ):
     f.write(data)
     f.close()
     
+    exts = ['jpg', 'jpeg', 'gif', 'bmp', 'png', 'tiff']
+    if filename.split('.')[-1] not in exts:
+        ext = imghdr.what(fullFilePath)
+        if ext in exts:
+            correctFullFilePath = fullFilePath + '.' + ext
+            filename += '.' + ext
+            print >> environ['wsgi.errors'], 'fullFilePath after correct ' + correctFullFilePath
+            os.rename(fullFilePath, correctFullFilePath)
+        
     fileLink = environ['wsgi.url_scheme'] + '://' + environ['HTTP_HOST'] + '/uploadfile/wsgi/Storage/' + fn + '/' + urllib.quote(filename)
     #res = getPreview(fullFilePath, environ)
 #    pr = previewclass.Preview()
@@ -51,8 +61,8 @@ def application(environ, start_response):
     fileLink = writeToFile(form.getvalue('file1'), form['file1'].filename, environ)  
     status = '200 OK'
     print >> environ['wsgi.errors'], fileLink
-#    output = "top.Ext.dispatch({controller:'Chat', action: 'upload_result', args : ['" + str(output) + "']});"
-    output = "<script type='text/javascript'>top.Ext.dispatch({controller:'Chat', action: 'upload_result', args : ['" + str(fileLink) + "', '" + str(form['to'].value) + "']});</script>"
+    output = "top.Ext.dispatch({controller:'Chat', action: 'upload_result', args : ['" + str(fileLink) + "', '" + str(form['to'].value) + "']});"
+    #output = "<script type='text/javascript'>top.Ext.dispatch({controller:'Chat', action: 'upload_result', args : ['" + str(fileLink) + "', '" + str(form['to'].value) + "']});</script>"
 
     print >> environ['wsgi.errors'], output
     response_headers = [('Content-type', 'text/html;'),
