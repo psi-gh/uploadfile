@@ -11,7 +11,7 @@ import previewclass
 import cgi, re, random, string, os, socket, urllib
     
 def application(environ, start_response):
-    print >> environ['wsgi.errors'],  "START"
+    print >> environ['wsgi.errors'],  "Generating preview module started..."
     form = cgi.FieldStorage(fp=environ['wsgi.input'], environ=environ)
     fileAddress = form['addr'].value
     print >> environ['wsgi.errors'],  'addr is ' + fileAddress

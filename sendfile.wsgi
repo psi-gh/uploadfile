@@ -47,17 +47,19 @@ def writeToFile(data, filename, environ):
 
     
 def application(environ, start_response):
-    print >> environ['wsgi.errors'], "Start " + repr(environ)
+    print >> environ['wsgi.errors'], "Calling sendfile module "
     form = cgi.FieldStorage(fp=environ['wsgi.input'], environ=environ)
-    print >> environ['wsgi.errors'], "There"
 #    print >> environ['wsgi.errors'], repr(form)
-    print >> environ['wsgi.errors'], '!@#!@#!@#!@' + form['file1'].filename
+    print >> environ['wsgi.errors'], 'Filename is ' + form['file1'].filename
     print >> environ['wsgi.errors'], 'to = ' + str(form['to'].value)
     fileLink = writeToFile(form.getvalue('file1'), form['file1'].filename, environ)  
     status = '200 OK'
     print >> environ['wsgi.errors'], fileLink
     output = "top.Ext.dispatch({controller:'Chat', action: 'upload_result', args : ['" + str(fileLink) + "', '" + str(form['to'].value) + "']});"
-    #output = "<script type='text/javascript'>top.Ext.dispatch({controller:'Chat', action: 'upload_result', args : ['" + str(fileLink) + "', '" + str(form['to'].value) + "']});</script>"
+    if form.has_key('device'):
+        print >> environ['wsgi.errors'], 'device = ' + str(form['device'].value)        
+        if form['device'].value == 'pc':
+            output = "<script type='text/javascript'>" + output + "</script>"
 
     print >> environ['wsgi.errors'], output
     response_headers = [('Content-type', 'text/html;'),
