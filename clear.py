@@ -37,10 +37,6 @@ def main():
     for x in range(len(previewsList)):
         previewsList[x] = previewsPath + previewsList[x] 
     processPath(previewsList)
-           
-    f=open('/home/pavel/123.txt', 'a')    
-    f.write(time.asctime() + '\n')
-    f.close()
         
 if __name__ == "__main__":
     main()
