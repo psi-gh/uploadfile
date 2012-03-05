@@ -24,8 +24,10 @@ def processPath(dirs):
     for x in dirs:
         if (datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(x))) > datetime.timedelta (days=1):
             print('removing ' + x + ' time is ' + time.asctime( time.localtime(os.path.getmtime(x))))
-            shutil.rmtree(x)
-    
+            if os.path.isfile(x):
+                os.remove(x)
+            else:
+                shutil.rmtree(x)
 
 def main():
 
