@@ -20,7 +20,7 @@ def getsubs(dir):
     
     return fullsubdirs, files
 
-def processPath(dirs):
+def deleteAllIfOld(dirs):
     for x in dirs:
         if (datetime.datetime.now() - datetime.datetime.fromtimestamp(os.path.getmtime(x))) > datetime.timedelta (days=1):
             print('removing ' + x + ' time is ' + time.asctime( time.localtime(os.path.getmtime(x))))
@@ -34,11 +34,11 @@ def main():
     storagePath = "/var/www/uploadfile/wsgi/Storage/"
     previewsPath = "/var/www/uploadfile/wsgi/Previews/"
     dirs, f = getsubs(storagePath)
-    processPath(dirs)
+    deleteAllIfOld(dirs)
     previewsList = os.listdir(previewsPath)
     for x in range(len(previewsList)):
         previewsList[x] = previewsPath + previewsList[x] 
-    processPath(previewsList)
+    deleteAllIfOld(previewsList)
         
 if __name__ == "__main__":
     main()
