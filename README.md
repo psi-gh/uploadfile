@@ -24,9 +24,9 @@ sudo chmod 777 Storage/
 Загрузка файла:
 Стандартный POST запрос с файлом на http://%%server_name%%/sendfile?to=JID_TO_SEND
 вместо JID_TO_SEND должен передаваться jid контакта, которому кидается файл. Нужен, чтобы возвратить правильный javascript-код, который выполнится как callback в Neiron Talk. Аргументами функции в этом JS коде будет адрес файла и JID.
-!!!Работает только через PhoneGap!!! Чтобы тестировать через браузер, надо добавить теги <script>, обрамляющие возвращаемый JS код (переменная output в sendfile.wsgi), но тогда не будет работать через PhoneGap.
+Работает только через PhoneGap! Чтобы тестировать через браузер, надо добавить теги &lt;script>, обрамляющие возвращаемый JS код (переменная output в sendfile.wsgi), но тогда не будет работать через PhoneGap.
 
-#Получение превью:
+# Получение превью:
 Сделать запрос на 
 http://webgranula.dyndns.org:82/getpreview?x=SIZE_X&y=SIZE_Y&addr=LINK
 возвратится изображение. LINK - ссылка на изображение, на которое должно быть сделано превью. Должно быть url-закодировано. Ссылку поместить прямо в тег <img src="LINK_TO_PREVIEW">
@@ -34,7 +34,7 @@ http://webgranula.dyndns.org:82/getpreview?x=SIZE_X&y=SIZE_Y&addr=LINK
 Пример:
 <img src="http://webgranula.dyndns.org:82/getpreview?x=200&y=100&addr=http%3A%2F%2Fwebgranula.dyndns.org%3A82%2Fuploadfile%2Fwsgi%2FStorage%2FQgBmmQxG%2F1323298110728.jpg">
 
-#Запуск очистки по расписанию:
+# Запуск очистки по расписанию:
 $ sudo crontab -u root -e
 Добавить строку с нужными настройками, например
 1 * * * * python /var/www/uploadfile/wsgi/clear.py
