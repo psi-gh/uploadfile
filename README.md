@@ -29,10 +29,10 @@ sudo chmod 777 Storage/
 # Получение превью:
 Сделать запрос на 
 http://webgranula.dyndns.org:82/getpreview?x=SIZE_X&y=SIZE_Y&addr=LINK
-возвратится изображение. LINK - ссылка на изображение, на которое должно быть сделано превью. Должно быть url-закодировано. Ссылку поместить прямо в тег <img src="LINK_TO_PREVIEW">
+возвратится изображение. LINK - ссылка на изображение, на которое должно быть сделано превью. Должно быть url-закодировано. Ссылку поместить прямо в тег &lt;img src="LINK_TO_PREVIEW">
 Предпологается, что LINK является валидной ссылкой на изображение.
 Пример:
-<img src="http://webgranula.dyndns.org:82/getpreview?x=200&y=100&addr=http%3A%2F%2Fwebgranula.dyndns.org%3A82%2Fuploadfile%2Fwsgi%2FStorage%2FQgBmmQxG%2F1323298110728.jpg">
+&lt;img src="http://webgranula.dyndns.org:82/getpreview?x=200&y=100&addr=http%3A%2F%2Fwebgranula.dyndns.org%3A82%2Fuploadfile%2Fwsgi%2FStorage%2FQgBmmQxG%2F1323298110728.jpg">
 
 # Запуск очистки по расписанию:
 $ sudo crontab -u root -e
